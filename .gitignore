@@ -1,3 +1,6 @@
+#-----------------------------
+# CMake:
+
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
@@ -9,3 +12,304 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps
+
+
+#---------------------------
+# C++ :
+
+# Prerequisites
+*.d
+
+# Object files
+*.o
+*.obj
+*.lo
+*.slo
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Executables
+*.exe
+*.out
+*.app
+*.i
+*.ii
+
+# Debug files
+*.dSYM/
+*.dSYM.zip
+*.dSYM.tar.gz
+*.dSYM.tar.bz2
+*.dSYM.tgz
+*.dSYM.tbz2
+*.dSYM.tbz
+
+# Debugger files
+*.dwo
+*.elf
+
+# Shared objects (shared libraries)
+*.so
+*.so.*
+*.dylib
+*.dll
+
+# Static libraries
+*.a
+*.lib
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+Makefile
+build/
+out/
+
+# IDE files
+# CLion
+.idea/
+cmake-build-debug/
+cmake-build-release/
+cmake-build-*
+# VS Code
+.vscode/
+# Xcode
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.xcworkspace
+*.xcscmblueprint
+# Visual Studio
+*.VC.db
+*.VC.opendb
+*.sdf
+*.opensdf
+*.vcxproj
+*.vcxproj.*
+*.vcproj.*
+*.user
+*.filters
+# Code::Blocks
+*.layout
+*.depend
+*.depend.*
+
+# SCons
+scons-build/
+scons-out/
+
+# Qt Creator
+*.pro.user*
+*.pro.user
+*.qbs.user
+*.qbs.user.*
+*.creator.user
+*.creator.user.*
+*.autosave
+
+# Autotools
+*.lo
+*.la
+*.al
+autom4te.cache
+*.in
+*.m4
+configure
+config.log
+config.status
+libtool
+ltmain.sh
+aclocal.m4
+compile
+depcomp
+missing
+install-sh
+Makefile.in
+
+# Backup files
+*~
+*.bak
+*.swp
+*.swo
+*.tmp
+*.old
+
+# Logs
+*.log
+
+# Python virtual environments
+venv/
+
+# Node.js modules
+node_modules/
+
+# JetBrains IDEs
+.idea/
+
+# Mac OS X
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
+
+
+#-------------------------------
+# Python files:
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+bin/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+doc/build/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# PyCharm
+.idea/
+*.pyc
+
+# Environments
+.env
+.env.*
+.venv
+.venv.*
+
+# VS Code
+.vscode/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
+__pypackages__/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# dotenv
+.env.local
+.env.*.local
+.local.env
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
