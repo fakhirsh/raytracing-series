@@ -1,2 +1,2 @@
 # raytracing-series-cpp
-Raytracing in one Weekend
+The Raytracing Series
