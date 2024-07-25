@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.5.0)
 project(RaytracerWeekend VERSION 0.1.0 LANGUAGES C CXX)
 
-# Set the output directory
-#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+# Set the C++ standard
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(RaytracerWeekend src/main.cpp)
 
