@@ -1,5 +1,5 @@
-# raytracing-series-cpp
-The Raytracing Series
+# raytracing-series
+The Raytracing Series (c++ version)
 
 # VSCode Setup:
 
