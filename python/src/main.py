@@ -1,18 +1,27 @@
 
-WIDTH = 800
-HEIGHT = 600
+from util import *
+from core import *
+from math import sqrt
+
+#------------------------------------------------------------------------
+
+
 
 def main():
-    print(f"P3\n{WIDTH} {HEIGHT}\n255")
+    
+    # World setup
+    world = hittable_list()
+    world.add(Sphere(point3(0, 0, -1), 0.5))
+    world.add(Sphere(point3(0, -100.5, -1), 100))
 
-    for h in range(HEIGHT):
-        for w in range(WIDTH):
-            pattern = (w) % 100
-            r = (pattern * 255) // 100
-            g = 0
-            b = 0
+    cam = camera()
+    cam.aspect_ratio = 16.0 / 9.0
+    cam.img_width = 400
+    cam.samples_per_pixel = 10
 
-            print(f"{r} {g} {b}")
+    cam.render(world)
+
+    #------------------------------------------------------------------------
 
 if __name__ == "__main__":
     main()
