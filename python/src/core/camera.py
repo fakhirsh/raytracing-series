@@ -1,6 +1,6 @@
 import sys
 from core import hittable, hit_record, interval
-from util import point3, vec3, color, write_color, Ray
+from util import point3, vec3, color, write_color, Ray, random_on_hemisphere
 from random import random
 
 class camera:
@@ -36,7 +36,8 @@ class camera:
     def ray_color(self, ray: Ray, world: hittable) -> color:
         rec = hit_record()
         if world.hit(ray, interval(0.001, float('inf')), rec):
-            return 0.5 * (rec.normal + color(1,1,1))
+            direction = random_on_hemisphere(rec.normal)
+            return 0.5 * self.ray_color(Ray(rec.p, rec.normal + direction), world)
         
         unit_dir = ray.direction.unit_vector()
         a = 0.5 * (unit_dir.y + 1.0)

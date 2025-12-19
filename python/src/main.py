@@ -5,8 +5,6 @@ from math import sqrt
 
 #------------------------------------------------------------------------
 
-
-
 def main():
     
     # World setup
@@ -16,8 +14,8 @@ def main():
 
     cam = camera()
     cam.aspect_ratio = 16.0 / 9.0
-    cam.img_width = 400
-    cam.samples_per_pixel = 10
+    cam.img_width = 600
+    cam.samples_per_pixel = 30
 
     cam.render(world)
 

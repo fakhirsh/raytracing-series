@@ -1,6 +1,6 @@
 import math
 from typing import Union
-
+import random
 
 class vec3:
     """
@@ -231,7 +231,6 @@ class vec3:
             random.uniform(min_val, max_val)
         )
 
-
 # Convenience aliases for common operations
 def dot(v1: vec3, v2: vec3) -> float:
     """Dot product of two vectors."""
@@ -260,3 +259,18 @@ def lerp(v1: vec3, v2: vec3, t: float) -> vec3:
 def degrees_to_radians(degrees: float) -> float:
     """Convert degrees to radians."""
     return degrees * math.pi / 180.0
+
+def random_unit_vector() -> vec3:
+    """Generate a random unit vector."""
+    while True:
+        p = vec3.random(-1, 1)
+        if p.length_squared() >= 1 or p.length_squared() <= 1e-20:
+            continue
+        return p.normalize()
+    
+def random_on_hemisphere(normal: vec3) -> vec3:
+    on_unit_sphere = random_unit_vector()
+    if dot(on_unit_sphere, normal) > 0.0:
+        return on_unit_sphere
+    else:
+        return -on_unit_sphere
