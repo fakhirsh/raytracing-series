@@ -292,3 +292,11 @@ def refract(uv: vec3, n: vec3, etai_over_etat: float) -> vec3:
     r_out_perp = etai_over_etat * (uv + cos_theta * n)
     r_out_parallel = -math.sqrt(abs(1.0 - r_out_perp.length_squared())) * n
     return r_out_perp + r_out_parallel
+
+def random_in_unit_disk() -> vec3:
+    """Generate a random point inside a unit disk in the XY plane."""
+    while True:
+        p = vec3(random.uniform(-1, 1), random.uniform(-1, 1), 0)
+        if p.length_squared() >= 1:
+            continue
+        return p

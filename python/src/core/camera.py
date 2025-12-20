@@ -1,7 +1,7 @@
 import math
 import sys
 from core import hittable, hit_record, interval
-from util import point3, vec3, color, write_color, Ray, degrees_to_radians, dot, cross, normalize
+from util import point3, vec3, color, write_color, Ray, degrees_to_radians, dot, cross, normalize, random_in_unit_disk
 from random import random
 
 class camera:
@@ -14,6 +14,9 @@ class camera:
     lookat = point3(0,0,-1)
     vup = vec3(0,1,0)
 
+    defocus_angle = 0.0
+    focus_distance = 10.0
+
     def __init__(self):
         pass
 
@@ -25,11 +28,11 @@ class camera:
         self.pixel_samples_scale = 1.0 / self.samples_per_pixel
 
         self.center = self.lookfrom
-        focal_length = (self.lookfrom - self.lookat).length()
+        # focal_length = (self.lookfrom - self.lookat).length()
         # Viewport widths less than one are ok since they are real valued.
         theta = degrees_to_radians(self.vfov)
         h = math.tan(theta / 2)
-        viewport_height = 2.0 * h * focal_length
+        viewport_height = 2.0 * h * self.focus_distance
         viewport_width = viewport_height * (self.img_width / self.img_height)
 
         w = normalize(self.lookfrom - self.lookat)
@@ -44,8 +47,12 @@ class camera:
         self.delta_u = viewport_u / self.img_width
         self.delta_v = viewport_v / self.img_height
         # Calculate the location of the upper left pixel.
-        viewport_upper_left = self.center - (focal_length * w) - viewport_u / 2 - viewport_v / 2
+        viewport_upper_left = self.center - (self.focus_distance * w) - viewport_u / 2 - viewport_v / 2
         self.pixel00_loc = viewport_upper_left + 0.5 * (self.delta_u + self.delta_v)
+
+        defocus_radius = self.focus_distance * math.tan(degrees_to_radians(self.defocus_angle) / 2)
+        self.defocus_disk_u = defocus_radius * u
+        self.defocus_disk_v = defocus_radius * v
 
     def ray_color(self, ray: Ray, depth: int, world: hittable) -> color:
         if depth <= 0:
@@ -66,12 +73,16 @@ class camera:
     def sample_square(self) -> vec3:
         return vec3(random() - 0.5, random() - 0.5, 0)
 
+    def defocus_disk_sample(self) -> point3:
+        p = random_in_unit_disk()
+        return self.center + p.x * self.defocus_disk_u + p.y * self.defocus_disk_v
+
     def get_ray(self, w: int, h: int) -> Ray:
         offset = self.sample_square()
         psample = self.pixel00_loc \
                     + (w + offset.x) * self.delta_u \
                     + (h + offset.y) * self.delta_v
-        ray_origin = self.center
+        ray_origin = self.center if self.defocus_angle <= 0.0 else self.defocus_disk_sample()
         ray_direction = psample - ray_origin
         return Ray(ray_origin, ray_direction)
 
