@@ -1,6 +1,7 @@
+import math
 import sys
 from core import hittable, hit_record, interval
-from util import point3, vec3, color, write_color, Ray, random_unit_vector
+from util import point3, vec3, color, write_color, Ray, degrees_to_radians, dot, cross, normalize
 from random import random
 
 class camera:
@@ -8,6 +9,10 @@ class camera:
     img_width = 100
     samples_per_pixel = 10
     max_depth = 10
+    vfov = 90
+    lookfrom = point3(0,0,0)
+    lookat = point3(0,0,-1)
+    vup = vec3(0,1,0)
 
     def __init__(self):
         pass
@@ -19,19 +24,27 @@ class camera:
         
         self.pixel_samples_scale = 1.0 / self.samples_per_pixel
 
-        focal_length = 1.0
-
+        self.center = self.lookfrom
+        focal_length = (self.lookfrom - self.lookat).length()
         # Viewport widths less than one are ok since they are real valued.
-        viewport_height = 2.0
+        theta = degrees_to_radians(self.vfov)
+        h = math.tan(theta / 2)
+        viewport_height = 2.0 * h * focal_length
         viewport_width = viewport_height * (self.img_width / self.img_height)
+
+        w = normalize(self.lookfrom - self.lookat)
+        u = normalize(cross(self.vup, w))
+        v = cross(w, u)
+
         # Calculate the vectors across the horizontal and down the vertical viewport edges.
-        viewport_u = vec3(viewport_width, 0, 0)
-        viewport_v = vec3(0, -viewport_height, 0)
+        viewport_u = viewport_width * u
+        viewport_v = viewport_height * -v
+
         # Calculate the horizontal and vertical delta vectors from pixel to pixel.
         self.delta_u = viewport_u / self.img_width
         self.delta_v = viewport_v / self.img_height
         # Calculate the location of the upper left pixel.
-        viewport_upper_left = self.center - vec3(0, 0, focal_length) - viewport_u / 2 - viewport_v / 2
+        viewport_upper_left = self.center - (focal_length * w) - viewport_u / 2 - viewport_v / 2
         self.pixel00_loc = viewport_upper_left + 0.5 * (self.delta_u + self.delta_v)
 
     def ray_color(self, ray: Ray, depth: int, world: hittable) -> color:
