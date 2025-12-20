@@ -1,12 +1,13 @@
 import sys
 from core import hittable, hit_record, interval
-from util import point3, vec3, color, write_color, Ray, random_on_hemisphere
+from util import point3, vec3, color, write_color, Ray, random_unit_vector
 from random import random
 
 class camera:
     aspect_ratio = 1.0
     img_width = 100
     samples_per_pixel = 10
+    max_depth = 10
 
     def __init__(self):
         pass
@@ -33,11 +34,17 @@ class camera:
         viewport_upper_left = self.center - vec3(0, 0, focal_length) - viewport_u / 2 - viewport_v / 2
         self.pixel00_loc = viewport_upper_left + 0.5 * (self.delta_u + self.delta_v)
 
-    def ray_color(self, ray: Ray, world: hittable) -> color:
+    def ray_color(self, ray: Ray, depth: int, world: hittable) -> color:
+        if depth <= 0:
+            return color(0, 0, 0)
+        
         rec = hit_record()
         if world.hit(ray, interval(0.001, float('inf')), rec):
-            direction = random_on_hemisphere(rec.normal)
-            return 0.5 * self.ray_color(Ray(rec.p, rec.normal + direction), world)
+            scattered = Ray(point3(0,0,0), vec3(0,0,0))
+            attenuation = color(0,0,0)
+            if rec.material.scatter(ray, rec, attenuation, scattered):
+                return attenuation * self.ray_color(scattered, depth - 1, world)
+            return color(0,0,0)
         
         unit_dir = ray.direction.unit_vector()
         a = 0.5 * (unit_dir.y + 1.0)
@@ -69,7 +76,7 @@ class camera:
                 pcolor = color(0,0,0)
                 for s in range(self.samples_per_pixel):
                     r = self.get_ray(w, h)
-                    pcolor += self.ray_color(r, world)
+                    pcolor += self.ray_color(r, self.max_depth, world)
                 
                 write_color(self.pixel_samples_scale * pcolor)
 

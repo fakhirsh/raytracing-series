@@ -40,11 +40,14 @@ class vec3:
             raise TypeError("Can only subtract vec3 from vec3")
         return vec3(self.x - other.x, self.y - other.y, self.z - other.z)
     
-    def __mul__(self, scalar: Union[int, float]) -> 'vec3':
-        """Scalar multiplication: self * scalar."""
-        if not isinstance(scalar, (int, float)):
-            raise TypeError("Can only multiply vec3 by scalar (int or float)")
-        return vec3(self.x * scalar, self.y * scalar, self.z * scalar)
+    def __mul__(self, other: Union[int, float, 'vec3']) -> 'vec3':
+        """Scalar multiplication: self * scalar or component-wise multiplication: self * vec3."""
+        if isinstance(other, (int, float)):
+            return vec3(self.x * other, self.y * other, self.z * other)
+        elif isinstance(other, vec3):
+            return vec3(self.x * other.x, self.y * other.y, self.z * other.z)
+        else:
+            raise TypeError("Can only multiply vec3 by scalar (int or float) or vec3")
     
     def __rmul__(self, scalar: Union[int, float]) -> 'vec3':
         """Scalar multiplication: scalar * self."""
@@ -196,6 +199,10 @@ class vec3:
         """Create a copy of this vector."""
         return vec3(self.x, self.y, self.z)
     
+    def near_zero(self, tolerance: float = 1e-8) -> bool:
+        """Check if the vector is close to zero in all dimensions."""
+        return abs(self.x) < tolerance and abs(self.y) < tolerance and abs(self.z) < tolerance
+    
     @staticmethod
     def zero() -> 'vec3':
         """Create a zero vector (0, 0, 0)."""
@@ -274,3 +281,7 @@ def random_on_hemisphere(normal: vec3) -> vec3:
         return on_unit_sphere
     else:
         return -on_unit_sphere
+    
+def reflect(v: vec3, n: vec3) -> vec3:
+    """Reflect vector v around normal n."""
+    return v - n * (2 * dot(v, n))

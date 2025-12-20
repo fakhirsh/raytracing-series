@@ -8,6 +8,7 @@ class hit_record:
         self.normal = normal
         self.t = t
         self.front_face: bool = True
+        self.material = None
 
     def set_face_normal(self, r: Ray, outward_normal: vec3):
         # Sets the hit record normal vector.
@@ -21,6 +22,7 @@ class hit_record:
         self.normal = other.normal
         self.t = other.t
         self.front_face = other.front_face
+        self.material = other.material
 
 class hittable(ABC):
     @abstractmethod

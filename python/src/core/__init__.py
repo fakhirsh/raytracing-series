@@ -18,6 +18,7 @@ from .sphere import Sphere
 from .hittable_list import hittable_list
 from .interval import interval
 from .camera import camera
+from .klein_bottle import KleinBottle
 
 __all__ = [
     'hittable',
@@ -26,4 +27,5 @@ __all__ = [
     'hittable_list',
     'interval',
     'camera',
+    'KleinBottle',
 ]
