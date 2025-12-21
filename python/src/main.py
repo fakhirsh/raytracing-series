@@ -4,6 +4,8 @@ from util import *
 from core import *
 from math import sqrt, cos, pi
 import random
+import cProfile
+import pstats
 
 #------------------------------------------------------------------------
 
@@ -49,9 +51,9 @@ def main():
     cam = camera()
 
     cam.aspect_ratio = 16.0 / 9.0
-    cam.img_width = 800
-    cam.samples_per_pixel = 50
-    cam.max_depth = 10
+    cam.img_width = 100
+    cam.samples_per_pixel = 5
+    cam.max_depth = 5
 
     cam.vfov = 20
     cam.lookfrom = point3(13, 2, 3)
@@ -66,4 +68,27 @@ def main():
     #------------------------------------------------------------------------
 
 if __name__ == "__main__":
+    profiler = cProfile.Profile()
+    profiler.enable()
+
     main()
+
+    profiler.disable()
+
+    # Save profile data to file for visualization tools
+    profiler.dump_stats('profile_output.prof')
+
+    # Print profiling results to console
+    stats = pstats.Stats(profiler)
+    stats.sort_stats('cumulative')
+
+    print("\n" + "="*80)
+    print("PROFILING RESULTS - Top 30 functions by cumulative time")
+    print("="*80)
+    stats.print_stats(30)
+
+    print("\n" + "="*80)
+    print("PROFILING RESULTS - Top 30 functions by total time")
+    print("="*80)
+    stats.sort_stats('tottime')
+    stats.print_stats(30)
