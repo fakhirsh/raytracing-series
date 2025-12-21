@@ -1,6 +1,6 @@
 
 from core.material import *
-from scenes import vol1_final_scene
+from scenes import *
 from util import *
 from core import *
 import cProfile
@@ -9,13 +9,14 @@ import pstats
 #------------------------------------------------------------------------
 
 def main():
-    world = vol1_final_scene()
+    #world = vol1_final_scene()
+    world = vol2_sec26_scene_simple()
 
     cam = camera()
 
     cam.aspect_ratio = 16.0 / 9.0
-    cam.img_width = 200
-    cam.samples_per_pixel = 20
+    cam.img_width = 400
+    cam.samples_per_pixel = 30
     cam.max_depth = 10
 
     cam.vfov = 20

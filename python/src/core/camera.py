@@ -84,7 +84,8 @@ class camera:
                     + (h + offset.y) * self.delta_v
         ray_origin = self.center if self.defocus_angle <= 0.0 else self.defocus_disk_sample()
         ray_direction = psample - ray_origin
-        return Ray(ray_origin, ray_direction)
+        ray_time = random()  # Time can be used for motion blur; here we just use a random time in [0,1)
+        return Ray(ray_origin, ray_direction, ray_time)
 
     def render(self, world: hittable):
         self.initialize()

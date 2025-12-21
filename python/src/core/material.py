@@ -22,7 +22,8 @@ class lambertian(material):
             scatter_direction = rec.normal
 
         scattered.origin = rec.p
-        scattered.direction = scatter_direction
+        scattered.direction = scatter_direction        
+        scattered.time = r_in.time
         attenuation.x = self.albedo.x
         attenuation.y = self.albedo.y
         attenuation.z = self.albedo.z
@@ -37,6 +38,7 @@ class metal(material):
         scatter_direction = reflect(r_in.direction, rec.normal) + self.fuzz * random_unit_vector()
         scattered.origin = rec.p
         scattered.direction = scatter_direction
+        scattered.time = r_in.time
         attenuation.x = self.albedo.x
         attenuation.y = self.albedo.y
         attenuation.z = self.albedo.z
@@ -67,6 +69,7 @@ class dielectric(material):
 
         scattered.origin = rec.p
         scattered.direction = direction
+        scattered.time = r_in.time
         return True
     
     def _reflectance(self, cosine: float, ref_idx: float) -> float:
