@@ -4,6 +4,16 @@ from core import *
 from math import sqrt, cos, pi
 import random
 
+def vol1_sec95() -> hittable_list:
+    ground_material = lambertian(color(0.5, 0.5, 0.5))
+    shpere_material = lambertian(color(0.8, 0.3, 0.3))
+    world = hittable_list()
+    obj = Sphere.stationary(point3(0,0,-1), 0.5, shpere_material)
+    world.add(obj)
+    obj = Sphere.stationary(point3(0,-100.5,-1), 100, ground_material)
+    world.add(obj)
+    return world
+
 def vol1_final_scene() -> hittable_list:
     world = hittable_list()
 

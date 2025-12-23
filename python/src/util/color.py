@@ -21,11 +21,12 @@ def linear_to_gamma(linear_component: float) -> float:
     else:
         return 0.0
 
-def write_color(pixel_color: color) -> None:
+def write_color(file, pixel_color: color) -> None:
     """
-    Print a color in PPM format (R G B as integers 0-255).
+    Write a color in PPM format (R G B as integers 0-255) to a file.
 
     Args:
+        file: File object to write to
         pixel_color: RGB color with components in [0, 1]
     """
     from core.interval import interval
@@ -40,9 +41,9 @@ def write_color(pixel_color: color) -> None:
     b = linear_to_gamma(b)
 
     # Translate [0,1] component values to byte range [0,255]
-    intensity = interval(0.0, 0.999)
+    intensity = interval.from_floats(0.0, 0.999)
     rbyte = int(256 * intensity.clamp(r))
     gbyte = int(256 * intensity.clamp(g))
     bbyte = int(256 * intensity.clamp(b))
-    
-    print(f"{rbyte} {gbyte} {bbyte}")
+
+    file.write(f"{rbyte} {gbyte} {bbyte}\n")

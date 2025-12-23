@@ -5,9 +5,23 @@ class interval:
     empty: ClassVar['interval']
     universe: ClassVar['interval']
 
-    def __init__(self, min: float = inf, max: float = -inf):
-        self.min = min
-        self.max = max
+    def __init__(self):
+        pass
+        
+    @classmethod
+    def from_floats(cls, min: float = inf, max: float = -inf) -> 'interval':
+        instance = cls()
+        instance.min = min
+        instance.max = max
+        return instance
+    
+    @classmethod
+    def from_intervals(cls, a: 'interval', b: 'interval') -> 'interval':
+        instance = cls()
+        instance.min = a.min if a.min < b.min else b.min
+        instance.max = a.max if a.max > b.max else b.max
+        return instance    
+
 
     def size(self) -> float:
         return self.max - self.min
@@ -25,7 +39,11 @@ class interval:
             return self.max
         else:
             return x
+        
+    def expand(self, delta: float) -> 'interval':
+        padding = delta / 2
+        return interval(self.min - padding, self.max + padding)
 
 # Class constants
-interval.empty = interval(inf, -inf)
-interval.universe = interval(-inf, inf)
+interval.empty = interval.from_floats(inf, -inf)
+interval.universe = interval.from_floats(-inf, inf)

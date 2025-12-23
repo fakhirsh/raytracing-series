@@ -1,8 +1,20 @@
 import math
 import sys
+import time
 from core import hittable, hit_record, interval
 from util import point3, vec3, color, write_color, Ray, degrees_to_radians, dot, cross, normalize, random_in_unit_disk
 from random import random
+
+def format_time(seconds: float) -> str:
+    """Format time in seconds to a human-readable string (e.g., '1h 59m 26s' or '0m 56s')"""
+    hours = int(seconds // 3600)
+    mins = int((seconds % 3600) // 60)
+    secs = int(seconds % 60)
+
+    if hours > 0:
+        return f"{hours}h {mins}m {secs}s"
+    else:
+        return f"{mins}m {secs}s"
 
 class camera:
     aspect_ratio = 1.0
@@ -59,7 +71,7 @@ class camera:
             return color(0, 0, 0)
         
         rec = hit_record()
-        if world.hit(ray, interval(0.001, float('inf')), rec):
+        if world.hit(ray, interval.from_floats(0.001, float('inf')), rec):
             scattered = Ray(point3(0,0,0), vec3(0,0,0))
             attenuation = color(0,0,0)
             if rec.material.scatter(ray, rec, attenuation, scattered):
@@ -87,26 +99,54 @@ class camera:
         ray_time = random()  # Time can be used for motion blur; here we just use a random time in [0,1)
         return Ray(ray_origin, ray_direction, ray_time)
 
-    def render(self, world: hittable):
+    def render(self, world: hittable, output_file: str = "image.ppm"):
         self.initialize()
 
-        print(f"P3\n{self.img_width} {self.img_height}\n255")
-        for h in range(self.img_height):
-            # Progress indicator: print to stderr and flush
-            sys.stderr.write(f"\rScanlines remaining: {self.img_height - h} ")
+        start_time = time.time()
+        last_time = start_time
+        scanline_times = []  # Store recent scanline times
+        window_size = 20  # Number of recent scanlines to average
+
+        with open(output_file, 'w') as f:
+            f.write(f"P3\n{self.img_width} {self.img_height}\n255\n")
+            for h in range(self.img_height):
+                for w in range(self.img_width):
+
+                    pcolor = color(0,0,0)
+                    for s in range(self.samples_per_pixel):
+                        r = self.get_ray(w, h)
+                        pcolor += self.ray_color(r, self.max_depth, world)
+
+                    write_color(f, self.pixel_samples_scale * pcolor)
+
+                # Calculate and display progress with windowed moving average
+                current_time = time.time()
+                scanline_time = current_time - last_time
+                last_time = current_time
+
+                # Maintain a sliding window of recent scanline times
+                scanline_times.append(scanline_time)
+                if len(scanline_times) > window_size:
+                    scanline_times.pop(0)
+
+                # Average only recent scanlines
+                avg_scanline_time = sum(scanline_times) / len(scanline_times)
+
+                elapsed = current_time - start_time
+                scanlines_done = h + 1
+                scanlines_remaining = self.img_height - scanlines_done
+                estimated_remaining = avg_scanline_time * scanlines_remaining
+
+                elapsed_str = format_time(elapsed)
+                eta_str = format_time(estimated_remaining)
+
+                sys.stderr.write(f"\rScanlines remaining: {scanlines_remaining} | Elapsed: {elapsed_str} | ETA: {eta_str}  ")
+                sys.stderr.flush()
+
+            # Clear the progress line and show completion message
+            elapsed_total = time.time() - start_time
+            sys.stderr.write("\r" + " " * 100 + "\r")
             sys.stderr.flush()
-            
-            for w in range(self.img_width):
-                
-                pcolor = color(0,0,0)
-                for s in range(self.samples_per_pixel):
-                    r = self.get_ray(w, h)
-                    pcolor += self.ray_color(r, self.max_depth, world)
-                
-                write_color(self.pixel_samples_scale * pcolor)
 
-        # Clear the progress line after completion
-        sys.stderr.write("\r" + " " * 30 + "\r")
-        sys.stderr.flush()
-
-        print("Done.", file=sys.stderr)
+            total_str = format_time(elapsed_total)
+            print(f"Done. Image saved to {output_file} (Total time: {total_str})", file=sys.stderr)

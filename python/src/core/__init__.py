@@ -19,6 +19,8 @@ from .hittable_list import hittable_list
 from .interval import interval
 from .camera import camera
 from .klein_bottle import KleinBottle
+from .aabb import aabb
+from .bvh_node import bvh_node
 
 __all__ = [
     'hittable',
@@ -28,4 +30,6 @@ __all__ = [
     'interval',
     'camera',
     'KleinBottle',
+    'aabb',
+    'bvh_node',
 ]

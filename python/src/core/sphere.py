@@ -1,5 +1,6 @@
 import math
-from core.material import material
+from .material import *
+from .aabb import aabb
 from util import point3, dot, Ray, vec3
 from .hittable import hittable, hit_record
 from .interval import interval
@@ -9,12 +10,14 @@ class Sphere(hittable):
         raise Exception("Use Sphere.stationary() or Sphere.moving() to create a Sphere")
     
     @classmethod
-    def stationary(cls, center: point3, radius: float, mat: material):
+    def stationary(cls, static_center: point3, radius: float, mat: material):
         """Create a stationary sphere."""
         instance = object.__new__(cls)
-        instance.center = Ray(center, vec3(0, 0, 0))
+        instance.center = Ray(static_center, vec3(0, 0, 0))
         instance.radius = max(0.0, radius)
         instance.material = mat
+        rvec = vec3(radius, radius, radius)
+        instance.bbox = aabb.from_points(static_center - rvec, static_center + rvec)
         return instance
     
     @classmethod
@@ -24,6 +27,10 @@ class Sphere(hittable):
         instance.center = Ray(center1, center2 - center1)
         instance.radius = max(0.0, radius)
         instance.material = mat
+        rvec = vec3(radius, radius, radius)
+        box1 = aabb.from_points(instance.center.at(0.0) - rvec, instance.center.at(0.0) + rvec)
+        box2 = aabb.from_points(instance.center.at(1.0) - rvec, instance.center.at(1.0) + rvec)
+        instance.bbox = aabb.from_aabbs(box1, box2)
         return instance
 
     def hit(self, r: Ray, ray_t: interval, rec: hit_record) -> bool:
@@ -53,3 +60,6 @@ class Sphere(hittable):
         rec.material = self.material
 
         return True
+
+    def bounding_box(self) -> aabb:
+        return self.bbox

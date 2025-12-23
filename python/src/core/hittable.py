@@ -1,5 +1,7 @@
 from util import vec3, point3, dot, Ray
+from core import *
 from .interval import interval
+from .aabb import aabb
 from abc import ABC, abstractmethod
 
 class hit_record:
@@ -9,6 +11,8 @@ class hit_record:
         self.t = t
         self.front_face: bool = True
         self.material = None
+        self.u: float = 0.0
+        self.v: float = 0.0
 
     def set_face_normal(self, r: Ray, outward_normal: vec3):
         # Sets the hit record normal vector.
@@ -27,4 +31,8 @@ class hit_record:
 class hittable(ABC):
     @abstractmethod
     def hit(self, r: Ray, ray_t: interval, rec: hit_record) -> bool:
+        pass
+
+    @abstractmethod
+    def bounding_box(self) -> aabb:
         pass
