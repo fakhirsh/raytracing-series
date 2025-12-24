@@ -102,6 +102,8 @@ class camera:
     def render(self, world: hittable, output_file: str = "image.ppm"):
         self.initialize()
 
+        print(f"Starting render: {self.img_width}x{self.img_height} ({self.samples_per_pixel} samples/pixel, max depth {self.max_depth})", file=sys.stderr)
+
         start_time = time.time()
         last_time = start_time
         scanline_times = []  # Store recent scanline times

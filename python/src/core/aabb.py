@@ -80,4 +80,14 @@ class aabb:
             else:
                 return 1 if self.y.size() >= self.z.size() else 2
     
-        
+    def _pad_to_minimums(self):
+        # Adjust the AABB so that no side is narrower than some delta, padding if necessary.
+        delta = 0.0001
+        if self.x.size() < delta:
+            self.x = self.x.expand(delta)
+        if self.y.size() < delta:
+            self.y = self.y.expand(delta)
+        if self.z.size() < delta:
+            self.z = self.z.expand(delta)
+
+    

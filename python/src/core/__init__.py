@@ -21,6 +21,10 @@ from .camera import camera
 from .klein_bottle import KleinBottle
 from .aabb import aabb
 from .bvh_node import bvh_node
+from .perlin import perlin
+from .quad import quad
+from .triangle import triangle
+from .mesh import mesh
 
 __all__ = [
     'hittable',
@@ -32,4 +36,8 @@ __all__ = [
     'KleinBottle',
     'aabb',
     'bvh_node',
+    'perlin',
+    'quad',
+    'triangle',
+    'mesh',
 ]

@@ -11,8 +11,12 @@ class bvh_node(hittable):
         return None
     
     @classmethod
-    def from_objects(cls, objects: list[hittable], start: int, end: int) -> "bvh_node":
+    def from_objects(cls, objects: list[hittable], start: int, end: int, depth: int = 0, show_progress: bool = False) -> "bvh_node":
         instance = cls.__new__(cls)
+
+        # Show progress at top level
+        if show_progress and depth == 0:
+            print(f"  Building BVH for {end - start} objects...")
 
         # Initialize bbox with the first object's bounding box
         instance.bbox = objects[start].bounding_box()
@@ -30,7 +34,7 @@ class bvh_node(hittable):
             comparator = bvh_node.box_y_compare
         else:
             comparator = bvh_node.box_z_compare
-        
+
         object_span = end - start
         if object_span == 1:
             instance.left = instance.right = objects[start]
@@ -38,13 +42,28 @@ class bvh_node(hittable):
             instance.left = objects[start]
             instance.right = objects[start + 1]
         else:
+            # Show progress for large sorts
+            if show_progress and depth <= 2 and object_span > 1000:
+                print(f"  Sorting {object_span} objects at depth {depth}...")
+
             objects[start:end] = sorted(objects[start:end], key=cmp_to_key(comparator))
             mid = start + object_span // 2
-            instance.left = cls.from_objects(objects, start, mid)
-            instance.right = cls.from_objects(objects, mid, end)
+
+            instance.left = cls.from_objects(objects, start, mid, depth + 1, show_progress)
+            instance.right = cls.from_objects(objects, mid, end, depth + 1, show_progress)
+
+        # Show completion at top level
+        if show_progress and depth == 0:
+            print(f"  BVH construction complete (depth ~{cls._estimate_depth(end - start)})")
 
         # instance.bbox = aabb.from_aabbs(instance.left.bounding_box(), instance.right.bounding_box())
         return instance
+
+    @staticmethod
+    def _estimate_depth(n: int) -> int:
+        """Estimate the depth of a balanced binary tree with n objects."""
+        import math
+        return int(math.ceil(math.log2(n))) if n > 0 else 0
     
     def hit(self, r: Ray, ray_t: interval, rec: hit_record) -> bool:
         if not self.bbox.hit(r, ray_t):

@@ -1,15 +1,18 @@
 
 from abc import ABC, abstractmethod
 import math
-from core.interval import interval
+from .interval import interval
 from util.rtw_image import rtw_image
 from util import color, point3
+from .perlin import perlin
 
 
 class texture(ABC):
     @abstractmethod
     def value(self, u: float, v: float, p: point3) -> color:
         pass
+    
+#----------------------------------------------------------------------------------
 
 class solid_color(texture):
     
@@ -28,6 +31,8 @@ class solid_color(texture):
     def value(self, u: float, v: float, p: point3) -> color:
         return self.albedo
     
+#----------------------------------------------------------------------------------
+
 class checker_texture(texture):
 
     @classmethod
@@ -51,6 +56,7 @@ class checker_texture(texture):
 
         return self.even.value(u, v, p) if is_even else self.odd.value(u, v, p)
     
+#----------------------------------------------------------------------------------
 
 class image_texture(texture):
     def __init__(self, filename: str):
@@ -72,3 +78,13 @@ class image_texture(texture):
         # Use float version directly to avoid the 1/255 scaling
         r, g, b = self.image.pixel_data_float(i, j)
         return color(r, g, b)
+    
+#----------------------------------------------------------------------------------
+
+class noise_texture(texture):
+    def __init__(self, scale: float = 1.0):
+        self.noise = perlin()
+        self.scale = scale
+    
+    def value(self, u: float, v: float, p: point3) -> color:
+        return color(.5, .5, .5) * (1 + math.sin(self.scale * p.z + 10 * self.noise.turb(p, 7)))

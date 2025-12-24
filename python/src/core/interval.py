@@ -42,7 +42,7 @@ class interval:
         
     def expand(self, delta: float) -> 'interval':
         padding = delta / 2
-        return interval(self.min - padding, self.max + padding)
+        return interval.from_floats(self.min - padding, self.max + padding)
 
 # Class constants
 interval.empty = interval.from_floats(inf, -inf)

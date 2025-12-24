@@ -2,7 +2,7 @@
 from abc import ABC, abstractmethod
 from random import random
 from .texture import texture, solid_color
-from util import Ray, color, random_unit_vector, reflect, refract, vec3
+from util import Ray, color, point3, random_unit_vector, reflect, refract, vec3
 from math import log, exp
 from core.hittable import hit_record
 
@@ -86,6 +86,11 @@ class dielectric(material):
         r0 = r0 * r0
         return r0 + (1 - r0) * ((1 - cosine) ** 5)
     
+#----------------------------------------------------------------------------------------
+
+class emissive(material):
+    pass
+
 #----------------------------------------------------------------------------------------
 
 class subsurface_simple(material):
@@ -220,3 +225,5 @@ class subsurface_volumetric(material):
                     v * msin(phi) * sin_theta + 
                     w * cos_theta)
         return direction.unit_vector()
+    
+#----------------------------------------------------------------------------------

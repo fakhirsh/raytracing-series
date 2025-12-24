@@ -1,9 +1,12 @@
 from core.material import *
-from core.texture import checker_texture, image_texture
+from core.texture import checker_texture, image_texture, noise_texture
+from core import quad
 from util import *
 from core import *
 from math import sqrt, cos, pi
 import random
+import time
+import logging
 
 #------------------------------------------------------------------------
 
@@ -328,37 +331,6 @@ def vol2_sec4_6_ver2():
 
 #------------------------------------------------------------------------
 
-def vol2_sec5_1():
-    world = hittable_list()
-
-    # Ground plane (large sphere below)
-    ground_material = lambertian.from_color(color(0.5, 0.5, 0.5))
-    world.add(Sphere.stationary(point3(0, -1000, 0), 1000, ground_material))
-
-
-    
-    # Create BVH and wrap it
-    bvh = bvh_node.from_objects(world.objects, 0, len(world.objects))
-    world = hittable_list()
-    world.add(bvh)
-
-    cam = camera()
-
-    cam.aspect_ratio = 16.0 / 9.0
-    cam.img_width = 600
-    cam.samples_per_pixel = 50
-    cam.max_depth = 10
-
-    cam.vfov = 20
-    cam.lookfrom = point3(0, 1, -5)  # Looking from slightly above
-    cam.lookat = point3(0, 0.5, 0)   # Looking at center sphere
-    cam.vup = vec3(0, 1, 0)
-    cam.defocus_angle = 0.0
-
-    cam.render(world, "renders/vol2_sec5_1.ppm")
-
-#------------------------------------------------------------------------
-
 def subsurface_scattering():
     world = hittable_list()
 
@@ -369,9 +341,9 @@ def subsurface_scattering():
     # Dark green wax sphere (center)
     wax_material = subsurface_volumetric(
                                         albedo=color(0.2, 0.5, 0.2),
-                                        scatter_coeff=2.0,    # low = light travels far inside
-                                        absorb_coeff=0.05,    # low = minimal absorption
-                                        g=0.6                 # forward scattering for soft look
+                                        scatter_coeff=0.3,    # low = light travels far inside
+                                        absorb_coeff=1.5,    # low = minimal absorption
+                                        g=0.3                 # forward scattering for soft look
                                     )
     world.add(Sphere.stationary(point3(0, 0.5, 0), 0.5, wax_material))
 
@@ -380,8 +352,9 @@ def subsurface_scattering():
     world.add(Sphere.stationary(point3(-1, 0.5, 0), 0.5, matte_green))
 
     # Glass sphere (right)
-    glass = dielectric(1.5)
-    world.add(Sphere.stationary(point3(1, 0.5, 0), 0.5, glass))
+    pretext = noise_texture(50.0)
+    noise_material = lambertian.from_texture(pretext)
+    world.add(Sphere.stationary(point3(1, 0.5, 0), 0.5, noise_material))
     
     # Create BVH and wrap it
     bvh = bvh_node.from_objects(world.objects, 0, len(world.objects))
@@ -391,9 +364,9 @@ def subsurface_scattering():
     cam = camera()
 
     cam.aspect_ratio = 16.0 / 9.0
-    cam.img_width = 300
-    cam.samples_per_pixel = 50
-    cam.max_depth = 10
+    cam.img_width = 100
+    cam.samples_per_pixel = 10
+    cam.max_depth = 5
 
     cam.vfov = 20
     cam.lookfrom = point3(0, 1, -5)  # Looking from slightly above
@@ -404,3 +377,221 @@ def subsurface_scattering():
     cam.render(world, "renders/subsurface_scattering.ppm")
 
 #------------------------------------------------------------------------
+
+def vol2_sec5():
+    world = hittable_list()
+
+    pretext = noise_texture(4.0)
+    ground_material = lambertian.from_texture(pretext)
+    world.add(Sphere.stationary(point3(0, -1000, 0), 1000, ground_material))
+
+    noise_material = lambertian.from_texture(pretext)
+    world.add(Sphere.stationary(point3(0, 2, 0), 2, noise_material))
+    
+    # Create BVH and wrap it
+    bvh = bvh_node.from_objects(world.objects, 0, len(world.objects))
+    world = hittable_list()
+    world.add(bvh)
+
+    cam = camera()
+
+    cam.aspect_ratio = 16.0 / 9.0
+    cam.img_width = 500
+    cam.samples_per_pixel = 20
+    cam.max_depth = 10
+    cam.vfov = 20
+    cam.lookfrom = point3(13,2,3)
+    cam.lookat = point3(0, 0, 0)
+    cam.vup = vec3(0, 1, 0)
+    cam.defocus_angle = 0.0
+
+    cam.render(world, "renders/vol2_sec5.ppm")
+
+#------------------------------------------------------------------------
+
+def emmission():
+    world = hittable_list()
+
+    pretext = noise_texture()
+    ground_material = lambertian.from_color(color(0.5, 0.5, 0.5))
+    world.add(Sphere.stationary(point3(0, -1000, 0), 1000, ground_material))
+
+    noise_material = lambertian.from_texture(pretext)
+    world.add(Sphere.stationary(point3(0, 2, 0), 2, noise_material))
+    
+    # Create BVH and wrap it
+    bvh = bvh_node.from_objects(world.objects, 0, len(world.objects))
+    world = hittable_list()
+    world.add(bvh)
+
+    cam = camera()
+
+    cam.aspect_ratio = 16.0 / 9.0
+    cam.img_width = 400
+    cam.samples_per_pixel = 20
+    cam.max_depth = 10
+
+    cam.vfov = 20
+    cam.lookfrom = point3(13,2,3)
+    cam.lookat = point3(0, 0, 0)
+    cam.vup = vec3(0, 1, 0)
+    cam.defocus_angle = 0.0
+
+    cam.render(world, "renders/vol2_sec5.ppm")
+
+#------------------------------------------------------------------------
+
+def vol2_sec6():
+    world = hittable_list()
+
+    # Materials
+    left_red     = lambertian.from_color(color(1.0, 0.2, 0.2))
+    back_green   = lambertian.from_color(color(0.2, 1.0, 0.2))
+    right_blue   = lambertian.from_color(color(0.2, 0.2, 1.0))
+    upper_orange = lambertian.from_color(color(1.0, 0.5, 0.0))
+    lower_teal   = lambertian.from_color(color(0.2, 0.8, 0.8))
+
+    # Quads
+    world.add(quad(point3(-3, -2, 5), vec3(0, 0, -4), vec3(0, 4, 0), left_red))
+    world.add(quad(point3(-2, -2, 0), vec3(4, 0, 0), vec3(0, 4, 0), back_green))
+    world.add(quad(point3( 3, -2, 1), vec3(0, 0, 4), vec3(0, 4, 0), right_blue))
+    world.add(quad(point3(-2, 3, 1), vec3(4, 0, 0), vec3(0, 0, 4), upper_orange))
+    world.add(quad(point3(-2, -3, 5), vec3(4, 0, 0), vec3(0, 0, -4), lower_teal))
+
+    # Create BVH and wrap it
+    bvh = bvh_node.from_objects(world.objects, 0, len(world.objects))
+    world = hittable_list()
+    world.add(bvh)
+
+    cam = camera()
+
+    cam.aspect_ratio      = 1.0
+    cam.img_width         = 400
+    cam.samples_per_pixel = 50
+    cam.max_depth         = 10
+
+    cam.vfov     = 80
+    cam.lookfrom = point3(0, 0, 9)
+    cam.lookat   = point3(0, 0, 0)
+    cam.vup      = vec3(0, 1, 0)
+    cam.defocus_angle = 0.0
+
+    cam.render(world, "renders/vol2_sec6.ppm")
+
+#------------------------------------------------------------------------
+
+def triangles():
+    world = hittable_list()
+
+    # Ground (large sphere below)
+    ground_material = lambertian.from_color(color(0.5, 0.5, 0.5))
+    world.add(Sphere.stationary(point3(0, -1000, 0), 1000, ground_material))
+
+    # Triangle 1: Solid color texture (red)
+    red_texture = solid_color.from_color(color(0.9, 0.2, 0.2))
+    red_material = lambertian.from_texture(red_texture)
+    tri1 = triangle(
+        point3(-2, 0, -1),
+        point3(-1, 2, -1),
+        point3(0, 0, -1),
+        red_material
+    )
+    world.add(tri1)
+
+    # Triangle 2: Earth texture
+    earth_texture = image_texture("assets/images/earthmap.jpg")
+    earth_material = lambertian.from_texture(earth_texture)
+    tri2 = triangle(
+        point3(0.5, 0, 0),
+        point3(1.5, 2, 0),
+        point3(2.5, 0, 0),
+        earth_material
+    )
+    world.add(tri2)
+
+    # Triangle 3: Perlin noise texture
+    perlin_texture = noise_texture(24.0)
+    perlin_material = lambertian.from_texture(perlin_texture)
+    tri3 = triangle(
+        point3(-0.5, 0, 1),
+        point3(0.5, 2, 1),
+        point3(1.5, 0, 1),
+        perlin_material
+    )
+    world.add(tri3)
+
+    # Create BVH
+    bvh = bvh_node.from_objects(world.objects, 0, len(world.objects))
+    world = hittable_list()
+    world.add(bvh)
+
+    cam = camera()
+
+    cam.aspect_ratio      = 16.0 / 9.0
+    cam.img_width         = 400
+    cam.samples_per_pixel = 50
+    cam.max_depth         = 10
+
+    cam.vfov     = 50
+    cam.lookfrom = point3(0, 1, 5)
+    cam.lookat   = point3(0.5, 1, 0)
+    cam.vup      = vec3(0, 1, 0)
+    cam.defocus_angle = 0.0
+
+    cam.render(world, "renders/triangles.ppm")
+
+#------------------------------------------------------------------------
+
+def test_mesh():
+    """Load and render the silo mesh."""
+
+    print("Loading silo model...")
+    start_time = time.time()
+
+    # Create material for the silo
+    wood_material = lambertian.from_color(color(0.6, 0.4, 0.2))
+
+    # Load the mesh from the models folder
+    # The mesh class will automatically find the .obj file inside
+    silo = mesh(
+        model_path="assets/models/house",
+        mat=wood_material,
+        scale=0.1,  # Scale down to 10% of original size
+        offset=point3(0, 0, 0)
+    )
+
+    load_time = time.time() - start_time
+    print(f"✓ Loaded {silo.triangle_count()} triangles in {load_time:.2f}s")
+    print(f"  Bounding box: {silo.bounding_box()}")
+
+    # Build scene
+    world = hittable_list()
+
+    # Add ground plane
+    ground_material = lambertian.from_color(color(0.5, 0.5, 0.5))
+    from core import Sphere
+    world.add(Sphere.stationary(point3(0, -1000, 0), 1000, ground_material))
+
+    # Add the silo (it already has internal BVH built automatically)
+    world.add(silo)
+
+    # Setup camera
+    cam = camera()
+    cam.aspect_ratio = 16.0 / 9.0
+    cam.img_width = 50
+    cam.samples_per_pixel = 10
+    cam.max_depth = 3
+
+    # Camera position - adjusted for scaled model
+    # Position camera to look at the model from a good angle
+    cam.vfov = 20  # Wider field of view
+    cam.lookfrom = point3(15, 5, 10)  # Further back and higher
+    cam.lookat = point3(0, 1.5, 0)  # Look at center of model
+    cam.vup = vec3(0, 1, 0)
+
+    cam.defocus_angle = 0  # No depth of field
+
+    # Render
+    print("\nRendering scene...")
+    cam.render(world, output_file="renders/test_mesh.ppm")
+    print("✓ Done! Check renders/test_mesh.ppm")
