@@ -21,6 +21,8 @@ class camera:
     img_width = 100
     samples_per_pixel = 10
     max_depth = 10
+    background = color(0.70, 0.80, 1.00)
+
     vfov = 90
     lookfrom = point3(0,0,0)
     lookat = point3(0,0,-1)
@@ -66,21 +68,28 @@ class camera:
         self.defocus_disk_u = defocus_radius * u
         self.defocus_disk_v = defocus_radius * v
 
-    def ray_color(self, ray: Ray, depth: int, world: hittable) -> color:
+    def ray_color(self, r: Ray, depth: int, world: hittable) -> color:
         if depth <= 0:
             return color(0, 0, 0)
         
         rec = hit_record()
-        if world.hit(ray, interval.from_floats(0.001, float('inf')), rec):
-            scattered = Ray(point3(0,0,0), vec3(0,0,0))
-            attenuation = color(0,0,0)
-            if rec.material.scatter(ray, rec, attenuation, scattered):
-                return attenuation * self.ray_color(scattered, depth - 1, world)
-            return color(0,0,0)
+
+        if not world.hit(r, interval.from_floats(0.001, float('inf')), rec):
+            return self.background
+        scattered = Ray(point3(0,0,0), vec3(0,0,0))
+        attenuation = color(0,0,0)
+        color_from_emission = rec.material.emitted(rec.u, rec.v, rec.p)
+        if not rec.material.scatter(r, rec, attenuation, scattered):
+            return color_from_emission
         
-        unit_dir = ray.direction.unit_vector()
-        a = 0.5 * (unit_dir.y + 1.0)
-        return (1.0 - a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0)
+        color_from_scatter = rec.material.emitted(rec.u, rec.v, rec.p)
+
+        if not rec.material.scatter(r, rec, attenuation, scattered):
+            return color_from_emission
+        
+        color_from_scatter = attenuation * self.ray_color(scattered, depth - 1, world)
+        return color_from_emission + color_from_scatter
+    
 
     def sample_square(self) -> vec3:
         return vec3(random() - 0.5, random() - 0.5, 0)

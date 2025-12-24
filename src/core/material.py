@@ -7,6 +7,10 @@ from math import log, exp
 from core.hittable import hit_record
 
 class material(ABC):
+
+    def emitted(self, u: float, v: float, p: point3) -> color:
+        return color(0, 0, 0)
+
     @abstractmethod
     def scatter(self, r_in: Ray, rec: 'hit_record', attenuation: color, scattered: Ray) -> bool:
         return False
@@ -88,9 +92,25 @@ class dielectric(material):
     
 #----------------------------------------------------------------------------------------
 
-class emissive(material):
-    pass
+class diffuse_light(material):
 
+    @classmethod
+    def from_texture(cls, tex: texture) -> "diffuse_light":
+        instance = cls()
+        instance.tex = tex
+        return instance
+
+    @classmethod
+    def from_color(cls, emit_color: color) -> "diffuse_light":
+        instance = cls()
+        instance.tex = solid_color.from_color(emit_color)
+        return instance
+
+    def emitted(self, u: float, v: float, p: point3) -> color:
+        return self.tex.value(u, v, p)
+
+    def scatter(self, r_in: Ray, rec: 'hit_record', attenuation: color, scattered: Ray) -> bool:
+        return False
 #----------------------------------------------------------------------------------------
 
 class subsurface_simple(material):

@@ -36,6 +36,7 @@ def vol1_sec9_5():
     cam.lookat = point3(0, 0, 0)
     cam.vup = vec3(0, 1, 0)
     cam.defocus_angle = 0.0
+    cam.background = color(0.70, 0.80, 1.00)
 
     cam.render(world, "vol1_sec9_5.ppm")
 
@@ -97,6 +98,7 @@ def vol1_sec14_1():
     cam.lookat = point3(0, 0, 0)
     cam.vup = vec3(0, 1, 0)
     cam.defocus_angle = 0.0
+    cam.background = color(0.70, 0.80, 1.00)
 
     cam.render(world, "vol1_sec14_1.ppm")
 
@@ -159,6 +161,7 @@ def vol2_sec2_6():
     cam.lookat = point3(0, 0, 0)
     cam.vup = vec3(0, 1, 0)
     cam.defocus_angle = 0.0
+    cam.background = color(0.70, 0.80, 1.00)
 
     cam.render(world, "vol2_sec2_6.ppm")
     
@@ -251,6 +254,7 @@ def vol2_sec4_3_simple():
     cam.lookat = point3(0, 0, 0)
     cam.vup = vec3(0, 1, 0)
     cam.defocus_angle = 0.0
+    cam.background = color(0.70, 0.80, 1.00)
 
     cam.render(world, "vol2_sec4_3_simple.ppm")
 
@@ -283,6 +287,7 @@ def vol2_sec4_6():
     cam.vup = vec3(0, 1, 0)
 
     cam.defocus_angle = 0.0 # for perfectly sharp images, default: 0.6
+    cam.background = color(0.70, 0.80, 1.00)
 
     cam.render(world, "renders/vol2_sec4_6.ppm")
 
@@ -326,6 +331,7 @@ def vol2_sec4_6_ver2():
     cam.lookat = point3(0, 0.5, 0)   # Looking at center sphere
     cam.vup = vec3(0, 1, 0)
     cam.defocus_angle = 0.0
+    cam.background = color(0.70, 0.80, 1.00)
 
     cam.render(world, "renders/vol2_sec4_6_ver2.ppm")
 
@@ -373,6 +379,7 @@ def subsurface_scattering():
     cam.lookat = point3(0, 0.5, 0)   # Looking at center sphere
     cam.vup = vec3(0, 1, 0)
     cam.defocus_angle = 0.0
+    cam.background = color(0.70, 0.80, 1.00)
 
     cam.render(world, "renders/subsurface_scattering.ppm")
 
@@ -404,6 +411,7 @@ def vol2_sec5():
     cam.lookat = point3(0, 0, 0)
     cam.vup = vec3(0, 1, 0)
     cam.defocus_angle = 0.0
+    cam.background = color(0.70, 0.80, 1.00)
 
     cam.render(world, "renders/vol2_sec5.ppm")
 
@@ -436,6 +444,7 @@ def emmission():
     cam.lookat = point3(0, 0, 0)
     cam.vup = vec3(0, 1, 0)
     cam.defocus_angle = 0.0
+    cam.background = color(0.70, 0.80, 1.00)
 
     cam.render(world, "renders/vol2_sec5.ppm")
 
@@ -475,6 +484,7 @@ def vol2_sec6():
     cam.lookat   = point3(0, 0, 0)
     cam.vup      = vec3(0, 1, 0)
     cam.defocus_angle = 0.0
+    cam.background = color(0.70, 0.80, 1.00)
 
     cam.render(world, "renders/vol2_sec6.ppm")
 
@@ -537,6 +547,7 @@ def triangles():
     cam.lookat   = point3(0.5, 1, 0)
     cam.vup      = vec3(0, 1, 0)
     cam.defocus_angle = 0.0
+    cam.background = color(0.70, 0.80, 1.00)
 
     cam.render(world, "renders/triangles.ppm")
 
@@ -588,10 +599,88 @@ def test_mesh():
     cam.lookfrom = point3(15, 5, 10)  # Further back and higher
     cam.lookat = point3(0, 1.5, 0)  # Look at center of model
     cam.vup = vec3(0, 1, 0)
-
     cam.defocus_angle = 0  # No depth of field
+    cam.background = color(0.70, 0.80, 1.00)
 
     # Render
     print("\nRendering scene...")
     cam.render(world, output_file="renders/test_mesh.ppm")
     print("✓ Done! Check renders/test_mesh.ppm")
+
+#------------------------------------------------------------------------
+
+def simple_light():
+    world = hittable_list()
+
+    pertext = noise_texture(4)
+    world.add(Sphere.stationary(point3(0, -1000, 0), 1000, lambertian.from_texture(pertext)))
+    world.add(Sphere.stationary(point3(0, 2, 0), 2, lambertian.from_texture(pertext)))
+
+    difflight = diffuse_light.from_color(color(4, 4, 4))
+    world.add(Sphere.stationary(point3(0, 7, 0), 2, difflight))
+    world.add(quad(point3(3, 1, -2), vec3(2, 0, 0), vec3(0, 2, 0), difflight))
+
+    # Create BVH and wrap it
+    bvh = bvh_node.from_objects(world.objects, 0, len(world.objects))
+    world = hittable_list()
+    world.add(bvh)
+
+    cam = camera()
+
+    cam.aspect_ratio = 16.0 / 9.0
+    cam.img_width = 200
+    cam.samples_per_pixel = 10
+    cam.max_depth = 5
+    cam.background = color(0, 0, 0)
+
+    cam.vfov = 20
+    cam.lookfrom = point3(26, 3, 6)
+    cam.lookat = point3(0, 2, 0)
+    cam.vup = vec3(0, 1, 0)
+    cam.background = color(0.70, 0.80, 1.00)
+
+    cam.defocus_angle = 0
+
+    cam.render(world, "renders/simple_light.ppm")
+
+#------------------------------------------------------------------------
+
+def cornell_box():
+    world = hittable_list()
+
+    red = lambertian.from_color(color(0.65, 0.05, 0.05))
+    white = lambertian.from_color(color(0.73, 0.73, 0.73))
+    green = lambertian.from_color(color(0.12, 0.45, 0.15))
+    light = diffuse_light.from_color(color(15, 15, 15))
+
+    world.add(quad(point3(555, 0, 0), vec3(0, 555, 0), vec3(0, 0, 555), green))
+    world.add(quad(point3(0, 0, 0), vec3(0, 555, 0), vec3(0, 0, 555), red))
+    world.add(quad(point3(343, 554, 332), vec3(-130, 0, 0), vec3(0, 0, -105), light))
+    world.add(quad(point3(0, 0, 0), vec3(555, 0, 0), vec3(0, 0, 555), white))
+    world.add(quad(point3(555, 555, 555), vec3(-555, 0, 0), vec3(0, 0, -555), white))
+    world.add(quad(point3(0, 0, 555), vec3(555, 0, 0), vec3(0, 555, 0), white))
+
+    # Create BVH and wrap it
+    bvh = bvh_node.from_objects(world.objects, 0, len(world.objects))
+    world = hittable_list()
+    world.add(bvh)
+
+    cam = camera()
+
+    cam.aspect_ratio = 1.0
+    cam.img_width = 200
+    cam.samples_per_pixel = 100
+    cam.max_depth = 20
+    cam.background = color(0, 0, 0)
+
+    cam.vfov = 40
+    cam.lookfrom = point3(278, 278, -800)
+    cam.lookat = point3(278, 278, 0)
+    cam.vup = vec3(0, 1, 0)
+
+    cam.defocus_angle = 0
+
+    cam.render(world, "renders/cornell_box.ppm")
+
+#------------------------------------------------------------------------
+
