@@ -27,6 +27,8 @@ class hit_record:
         self.t = other.t
         self.front_face = other.front_face
         self.material = other.material
+        self.u = other.u
+        self.v = other.v
 
 class hittable(ABC):
     @abstractmethod

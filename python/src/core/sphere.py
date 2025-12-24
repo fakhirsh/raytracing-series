@@ -6,8 +6,6 @@ from .hittable import hittable, hit_record
 from .interval import interval
 
 class Sphere(hittable):
-    def __init__(self):
-        raise Exception("Use Sphere.stationary() or Sphere.moving() to create a Sphere")
     
     @classmethod
     def stationary(cls, static_center: point3, radius: float, mat: material):
@@ -57,9 +55,21 @@ class Sphere(hittable):
         rec.p = r.at(rec.t)
         outward_normal = (rec.p - current_center) / self.radius
         rec.set_face_normal(r, outward_normal)
+        rec.u, rec.v = Sphere.get_sphere_uv(outward_normal)
         rec.material = self.material
 
         return True
 
     def bounding_box(self) -> aabb:
         return self.bbox
+    
+    @staticmethod
+    def get_sphere_uv(p: point3) -> tuple[float, float]:
+        """Convert a point on the sphere to UV coordinates."""
+        theta = math.acos(-p.y)
+        phi = math.atan2(-p.z, p.x) + math.pi
+
+        u = phi / (2 * math.pi)
+        v = theta / math.pi
+
+        return (u, v)

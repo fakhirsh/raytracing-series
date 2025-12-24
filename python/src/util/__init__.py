@@ -27,6 +27,7 @@ Examples:
 from .vec3 import vec3, dot, cross, length, normalize, distance, lerp, degrees_to_radians, random_unit_vector, random_on_hemisphere, reflect, refract, random_in_unit_disk
 from .color import color, write_color
 from .ray import Ray
+from .rtw_image import rtw_image
 
 # Type alias for semantic clarity
 point3 = vec3  # 3D point in space
@@ -35,6 +36,7 @@ __all__ = [
     # Core class
     'vec3',
     'Ray',
+    'rtw_image',
     # Type aliases
     'point3',
     'color',
