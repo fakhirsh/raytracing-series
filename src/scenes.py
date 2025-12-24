@@ -38,7 +38,7 @@ def vol1_sec9_5():
     cam.defocus_angle = 0.0
     cam.background = color(0.70, 0.80, 1.00)
 
-    cam.render(world, "vol1_sec9_5.ppm")
+    cam.render(world, "../temp/vol1_sec9_5.ppm")
 
 #------------------------------------------------------------------------
 
@@ -100,7 +100,7 @@ def vol1_sec14_1():
     cam.defocus_angle = 0.0
     cam.background = color(0.70, 0.80, 1.00)
 
-    cam.render(world, "vol1_sec14_1.ppm")
+    cam.render(world, "../temp/vol1_sec14_1.ppm")
 
 #------------------------------------------------------------------------
 
@@ -163,7 +163,7 @@ def vol2_sec2_6():
     cam.defocus_angle = 0.0
     cam.background = color(0.70, 0.80, 1.00)
 
-    cam.render(world, "vol2_sec2_6.ppm")
+    cam.render(world, "../temp/vol2_sec2_6.ppm")
     
 
 #------------------------------------------------------------------------
@@ -256,7 +256,7 @@ def vol2_sec4_3_simple():
     cam.defocus_angle = 0.0
     cam.background = color(0.70, 0.80, 1.00)
 
-    cam.render(world, "vol2_sec4_3_simple.ppm")
+    cam.render(world, "../temp/vol2_sec4_3_simple.ppm")
 
 #------------------------------------------------------------------------
 
@@ -289,7 +289,7 @@ def vol2_sec4_6():
     cam.defocus_angle = 0.0 # for perfectly sharp images, default: 0.6
     cam.background = color(0.70, 0.80, 1.00)
 
-    cam.render(world, "renders/vol2_sec4_6.ppm")
+    cam.render(world, "../temp/vol2_sec4_6.ppm")
 
 #------------------------------------------------------------------------
 
@@ -333,12 +333,15 @@ def vol2_sec4_6_ver2():
     cam.defocus_angle = 0.0
     cam.background = color(0.70, 0.80, 1.00)
 
-    cam.render(world, "renders/vol2_sec4_6_ver2.ppm")
+    cam.render(world, "../temp/vol2_sec4_6_ver2.ppm")
 
 #------------------------------------------------------------------------
 
 def subsurface_scattering():
     world = hittable_list()
+
+    difflight = diffuse_light.from_color(color(4, 4, 4))
+    world.add(quad(point3(-1, 0, 3), vec3(2, 0, 0), vec3(0, 2, 0), difflight))
 
     # Ground plane (large sphere below)
     ground_material = lambertian.from_color(color(0.5, 0.5, 0.5))
@@ -347,9 +350,9 @@ def subsurface_scattering():
     # Dark green wax sphere (center)
     wax_material = subsurface_volumetric(
                                         albedo=color(0.2, 0.5, 0.2),
-                                        scatter_coeff=0.3,    # low = light travels far inside
-                                        absorb_coeff=1.5,    # low = minimal absorption
-                                        g=0.3                 # forward scattering for soft look
+                                        scatter_coeff=0.08,    # low = light travels far inside
+                                        absorb_coeff=0.8,    # low = minimal absorption
+                                        g=0.7                 # forward scattering for soft look
                                     )
     world.add(Sphere.stationary(point3(0, 0.5, 0), 0.5, wax_material))
 
@@ -370,9 +373,9 @@ def subsurface_scattering():
     cam = camera()
 
     cam.aspect_ratio = 16.0 / 9.0
-    cam.img_width = 100
-    cam.samples_per_pixel = 10
-    cam.max_depth = 5
+    cam.img_width = 600
+    cam.samples_per_pixel = 50
+    cam.max_depth = 20
 
     cam.vfov = 20
     cam.lookfrom = point3(0, 1, -5)  # Looking from slightly above
@@ -381,7 +384,7 @@ def subsurface_scattering():
     cam.defocus_angle = 0.0
     cam.background = color(0.70, 0.80, 1.00)
 
-    cam.render(world, "renders/subsurface_scattering.ppm")
+    cam.render(world, "../temp/subsurface_scattering.ppm")
 
 #------------------------------------------------------------------------
 
@@ -413,7 +416,7 @@ def vol2_sec5():
     cam.defocus_angle = 0.0
     cam.background = color(0.70, 0.80, 1.00)
 
-    cam.render(world, "renders/vol2_sec5.ppm")
+    cam.render(world, "../temp/vol2_sec5.ppm")
 
 #------------------------------------------------------------------------
 
@@ -446,7 +449,7 @@ def emmission():
     cam.defocus_angle = 0.0
     cam.background = color(0.70, 0.80, 1.00)
 
-    cam.render(world, "renders/vol2_sec5.ppm")
+    cam.render(world, "../temp/vol2_sec5.ppm")
 
 #------------------------------------------------------------------------
 
@@ -486,7 +489,7 @@ def vol2_sec6():
     cam.defocus_angle = 0.0
     cam.background = color(0.70, 0.80, 1.00)
 
-    cam.render(world, "renders/vol2_sec6.ppm")
+    cam.render(world, "../temp/vol2_sec6.ppm")
 
 #------------------------------------------------------------------------
 
@@ -549,7 +552,7 @@ def triangles():
     cam.defocus_angle = 0.0
     cam.background = color(0.70, 0.80, 1.00)
 
-    cam.render(world, "renders/triangles.ppm")
+    cam.render(world, "../temp/triangles.ppm")
 
 #------------------------------------------------------------------------
 
@@ -604,8 +607,8 @@ def test_mesh():
 
     # Render
     print("\nRendering scene...")
-    cam.render(world, output_file="renders/test_mesh.ppm")
-    print("✓ Done! Check renders/test_mesh.ppm")
+    cam.render(world, "../temp/test_mesh.ppm")
+    print("✓ Done! Check ../temp/test_mesh.ppm")
 
 #------------------------------------------------------------------------
 
@@ -641,7 +644,7 @@ def simple_light():
 
     cam.defocus_angle = 0
 
-    cam.render(world, "renders/simple_light.ppm")
+    cam.render(world, "../temp/simple_light.ppm")
 
 #------------------------------------------------------------------------
 
@@ -680,7 +683,7 @@ def cornell_box():
 
     cam.defocus_angle = 0
 
-    cam.render(world, "renders/cornell_box.ppm")
+    cam.render(world, "../temp/cornell_box.ppm")
 
 #------------------------------------------------------------------------
 
