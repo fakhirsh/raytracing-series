@@ -153,8 +153,8 @@ def vol2_sec2_6():
 
     cam.aspect_ratio = 16.0 / 9.0
     cam.img_width = 300
-    cam.samples_per_pixel = 50
-    cam.max_depth = 20
+    cam.samples_per_pixel = 20
+    cam.max_depth = 10
 
     cam.vfov = 20
     cam.lookfrom = point3(13, 2, 3)
@@ -366,16 +366,16 @@ def subsurface_scattering():
     world.add(Sphere.stationary(point3(1, 0.5, 0), 0.5, noise_material))
     
     # Create BVH and wrap it
-    bvh = bvh_node.from_objects(world.objects, 0, len(world.objects))
-    world = hittable_list()
-    world.add(bvh)
+    # bvh = bvh_node.from_objects(world.objects, 0, len(world.objects))
+    # world = hittable_list()
+    # world.add(bvh)
 
     cam = camera()
 
     cam.aspect_ratio = 16.0 / 9.0
-    cam.img_width = 600
-    cam.samples_per_pixel = 50
-    cam.max_depth = 20
+    cam.img_width = 100
+    cam.samples_per_pixel = 40
+    cam.max_depth = 15
 
     cam.vfov = 20
     cam.lookfrom = point3(0, 1, -5)  # Looking from slightly above
