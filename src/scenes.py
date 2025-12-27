@@ -89,9 +89,9 @@ def vol1_sec14_1():
     cam = camera()
 
     cam.aspect_ratio = 16.0 / 9.0
-    cam.img_width = 800
-    cam.samples_per_pixel = 100
-    cam.max_depth = 20
+    cam.img_width = 100
+    cam.samples_per_pixel = 10
+    cam.max_depth = 5
 
     cam.vfov = 20
     cam.lookfrom = point3(13, 2, 3)
@@ -152,9 +152,9 @@ def vol2_sec2_6():
     cam = camera()
 
     cam.aspect_ratio = 16.0 / 9.0
-    cam.img_width = 300
-    cam.samples_per_pixel = 20
-    cam.max_depth = 10
+    cam.img_width = 100
+    cam.samples_per_pixel = 10
+    cam.max_depth = 5
 
     cam.vfov = 20
     cam.lookfrom = point3(13, 2, 3)
